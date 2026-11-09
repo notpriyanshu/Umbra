@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; worker-src 'self' blob: data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Umbra Studio</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" data-name="vs/editor/editor.main" href="../../node_modules/monaco-editor/min/vs/editor/editor.main.css" />
+</head>
+<body>
+<div id="app">
+  <!-- ============================== TITLE BAR ============================== -->
+  <header id="titlebar">
+    <div class="tb-left">
+      <div class="logo" title="Umbra Studio">
+        <svg viewBox="0 0 32 32" width="18" height="18"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><path d="M16 2 4 8v8c0 7 5.2 12.4 12 14 6.8-1.6 12-7 12-14V8L16 2z" fill="url(#lg)"/><path d="M16 9a7 7 0 1 0 0 14 5.2 5.2 0 0 1 0-14z" fill="#0a0b10"/></svg>
+      </div>
+      <nav class="menus">
+        <button data-menu="file">File</button>
+        <button data-menu="edit">Edit</button>
+        <button data-menu="view">View</button>
+        <button data-menu="ai">AI</button>
+        <button data-menu="help">Help</button>
+      </nav>
+    </div>
+    <button id="tb-search" class="tb-search"><svg viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 0 1 5.96 12.05l4.25 4.24-1.42 1.42-4.24-4.25A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></svg><span id="tb-title">Umbra Studio</span><kbd>Ctrl P</kbd></button>
+    <div class="tb-right">
+      <button id="privacy-pill" class="privacy-pill" title="Privacy status — click for the Network Ledger">
+        <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm-1 14-4-4 1.4-1.4L11 13.2l4.6-4.6L17 10l-6 6z"/></svg>
+        <span id="privacy-label">LOCAL-ONLY</span>
+      </button>
+      <div class="win-ctl">
+        <button id="w-min" title="Minimize"><svg viewBox="0 0 10 10"><path d="M0 5h10" stroke="currentColor"/></svg></button>
+        <button id="w-max" title="Maximize"><svg viewBox="0 0 10 10"><rect x=".5" y=".5" width="9" height="9" fill="none" stroke="currentColor"/></svg></button>
+        <button id="w-close" class="close" title="Close"><svg viewBox="0 0 10 10"><path d="M0 0l10 10M10 0 0 10" stroke="currentColor"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <div id="body">
+    <!-- ============================== ACTIVITY BAR ============================== -->
+    <aside id="activity">
+      <button class="act active" data-view="explorer" title="Explorer (Ctrl+Shift+E)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></button>
+      <button class="act" data-view="search" title="Search (Ctrl+Shift+F)"><svg viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 0 1 5.96 12.05l4.25 4.24-1.42 1.42-4.24-4.25A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></svg></button>
+      <button class="act" data-view="agent" title="Umbra Agent (Ctrl+L)"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4L12 2zm7 13 1.2 2.8L23 19l-2.8 1.2L19 23l-1.2-2.8L15 19l2.8-1.2L19 15z"/></svg></button>
+      <button class="act" data-view="shield" title="Privacy Shield"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm0 2.2 6 2.3V11c0 4-2.6 7.7-6 8.9-3.4-1.2-6-4.9-6-8.9V6.5l6-2.3z"/></svg></button>
+      <div class="spacer"></div>
+      <button class="act" id="act-settings" title="Settings (Ctrl+,)"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.9c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5-2.2-1.6zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg></button>
+    </aside>
+
+    <!-- ============================== SIDEBAR ============================== -->
+    <section id="sidebar">
+      <div class="sb-view" data-view="explorer">
+        <div class="sb-head"><span>EXPLORER</span>
+          <div class="sb-actions">
+            <button id="ex-newfile" title="New File"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 13h-2v-3H8v-2h3V7h2v3h3v2h-3v3z"/></svg></button>
+            <button id="ex-newfolder" title="New Folder"><svg viewBox="0 0 24 24"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2zm5 11h-2v2h-2v-2H9v-2h2v-2h2v2h2v2z"/></svg></button>
+            <button id="ex-refresh" title="Refresh"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+            <button id="ex-collapse" title="Collapse All"><svg viewBox="0 0 24 24"><path d="M7 14l5-5 5 5H7z"/></svg></button>
+          </div>
+        </div>
+        <div id="ws-name" class="ws-name"></div>
+        <div id="tree" class="tree"></div>
+        <div id="no-folder" class="empty-state">
+          <p>No folder opened.</p>
+          <button class="btn primary" id="open-folder-btn">Open Folder</button>
+          <p class="muted small">Files never leave this machine unless you send them to a model you configured.</p>
+        </div>
+      </div>
+      <div class="sb-view hidden" data-view="search">
+        <div class="sb-head"><span>SEARCH</span></div>
+        <div class="pad"><input id="search-input" class="input" placeholder="Search in workspace…" spellcheck="false" /></div>
+        <div id="search-results" class="search-results"></div>
+      </div>
+      <div class="sb-view hidden" data-view="shield">
+        <div class="sb-head"><span>PRIVACY SHIELD</span></div>
+        <div id="shield-view" class="pad shield"></div>
+      </div>
+    </section>
+    <div class="resizer v" data-resize="sidebar"></div>
+
+    <!-- ============================== MAIN ============================== -->
+    <main id="main">
+      <div id="tabs" class="tabs"></div>
+      <div id="breadcrumbs" class="breadcrumbs"></div>
+      <div id="editor-wrap">
+        <div id="editor"></div>
+        <div id="welcome" class="welcome"></div>
+        <div id="inline-edit" class="inline-edit hidden">
+          <div class="ie-head"><span class="spark">✦</span> Edit selection with AI <kbd>Esc</kbd></div>
+          <input id="ie-input" placeholder="e.g. add error handling, convert to async/await…" spellcheck="false" />
+          <div id="ie-status" class="ie-status"></div>
+        </div>
+      </div>
+      <div class="resizer h" data-resize="panel"></div>
+      <section id="panel">
+        <div class="panel-tabs">
+          <button class="ptab active" data-ptab="terminal">TERMINAL</button>
+          <button class="ptab" data-ptab="ledger">NETWORK LEDGER <span id="ledger-count" class="count">0</span></button>
+          <button class="ptab" data-ptab="output">OUTPUT</button>
+          <div class="spacer"></div>
+          <button id="term-clear" class="icon-btn" title="Clear"><svg viewBox="0 0 24 24"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+          <button id="term-kill" class="icon-btn" title="Stop running command"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg></button>
+          <button id="panel-close" class="icon-btn" title="Hide panel (Ctrl+`)"><svg viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg></button>
+        </div>
+        <div class="panel-body" data-pbody="terminal">
+          <div id="term-out" class="term-out" tabindex="0"></div>
+          <div class="term-line"><span id="term-prompt" class="term-prompt"></span><input id="term-input" spellcheck="false" autocomplete="off" /></div>
+        </div>
+        <div class="panel-body hidden" data-pbody="ledger"><div id="ledger-view" class="ledger"></div></div>
+        <div class="panel-body hidden" data-pbody="output"><pre id="output-view" class="output"></pre></div>
+      </section>
+    </main>
+
+    <div class="resizer v" data-resize="ai"></div>
+    <!-- ============================== AI PANEL ============================== -->
+    <section id="ai">
+      <div class="ai-head">
+        <div class="ai-title"><span class="spark">✦</span> UMBRA AGENT</div>
+        <div class="ai-head-actions">
+          <button id="ai-new" class="icon-btn" title="New session"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+          <button id="ai-close" class="icon-btn" title="Hide"><svg viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg></button>
+        </div>
+      </div>
+      <div class="ai-model-row">
+        <button id="model-picker" class="model-picker"><span class="dot" id="model-dot"></span><span id="model-label">—</span><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></button>
+        <div class="seg" id="mode-seg">
+          <button data-mode="chat">Ask</button>
+          <button data-mode="agent" class="active">Agent</button>
+        </div>
+      </div>
+      <div id="chat" class="chat"></div>
+      <div class="composer">
+        <div id="ctx-chips" class="ctx-chips"></div>
+        <textarea id="prompt" rows="3" placeholder="Ask anything, or describe a change… (Enter to send, Shift+Enter for newline)" spellcheck="false"></textarea>
+        <div class="composer-foot">
+          <span id="composer-hint" class="muted small"></span>
+          <button id="send" class="btn primary send"><span>Send</span><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================== STATUS BAR ============================== -->
+  <footer id="statusbar">
+    <div class="sb-l">
+      <span class="sbi accent" id="st-shield"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3z"/></svg> <span id="st-shield-text">Private</span></span>
+      <span class="sbi" id="st-ws">No folder</span>
+      <span class="sbi" id="st-net">0 outbound · 0 blocked</span>
+    </div>
+    <div class="sb-r">
+      <span class="sbi" id="st-pos"></span>
+      <span class="sbi" id="st-lang"></span>
+      <span class="sbi">UTF-8</span>
+      <span class="sbi" id="st-model"></span>
+      <span class="sbi" id="st-tel">Telemetry: none</span>
+    </div>
+  </footer>
+</div>
+
+<!-- overlays -->
+<div id="palette" class="palette hidden">
+  <div class="palette-box">
+    <input id="palette-input" spellcheck="false" />
+    <div id="palette-list" class="palette-list"></div>
+  </div>
+</div>
+<div id="menu-pop" class="menu-pop hidden"></div>
+<div id="settings" class="settings hidden"></div>
+<div id="modal" class="modal hidden"></div>
+<div id="toasts" class="toasts"></div>
+
+<script src="../../node_modules/monaco-editor/min/vs/loader.js"></script>
+<script src="js/util.js"></script>
+<script src="js/markdown.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/explorer.js"></script>
+<script src="js/terminal.js"></script>
+<script src="js/ledger.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/palette.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

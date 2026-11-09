@@ -1,0 +1,19 @@
+{
+  "name": "umbra-studio",
+  "productName": "Umbra Studio",
+  "version": "1.0.0",
+  "description": "Umbra Studio — a private, local-first AI code editor. Bring your own keys, run local LLMs (Unsloth, Ollama, LM Studio, llama.cpp) and coding agents. Zero telemetry.",
+  "main": "src/main/main.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --inspect"
+  },
+  "dependencies": {
+    "monaco-editor": "0.52.2"
+  },
+  "devDependencies": {
+    "electron": "33.2.1"
+  }
+}
